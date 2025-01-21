@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D3 Horizontal Bar Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <script>
+      // Set chart dimensions and margins
+      const width = 500;
+      const height = 300;
+      const margin = { top: 20, right: 20, bottom: 40, left: 100 };
+
+      // Sample data
+      const data = [10, 15, 20, 25, 30, 35, 21];
+
+      // Create SVG container
+      const svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      // Create scales
+      const xScale = d3
+        .scaleLinear()
+        .domain([0, d3.max(data)]) // Domain of the data
+        .range([margin.left, width - margin.right]); // Range on the screen
+
+      const yScale = d3
+        .scaleBand()
+        .domain(data.map((_, i) => i)) // One band per data point
+        .range([margin.top, height - margin.bottom])
+        .padding(0.2);
+
+      // Add bars
+      svg
+        .selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", (d) => xScale(0)) // Bars start at x = 0
+        .attr("y", (d, i) => yScale(i)) // Position using yScale
+        .attr("width", (d) => xScale(d) - xScale(0)) // Width corresponds to the data value
+        .attr("height", yScale.bandwidth()) // Height determined by yScale's band
+        .attr("fill", "steelblue");
+
+      // Add x-axis
+      const xAxis = d3.axisBottom(xScale).ticks(10);
+
+      svg
+        .append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`) // Move x-axis to the bottom
+        .call(xAxis);
+
+      // Add y-axis
+      const yAxis = d3.axisLeft(yScale).tickFormat((d) => `Item ${d + 1}`); // Format y-axis labels
+
+      svg
+        .append("g")
+        .attr("transform", `translate(${margin.left},0)`) // Move y-axis to the left
+        .call(yAxis);
+    </script>
+  </body>
+</html>

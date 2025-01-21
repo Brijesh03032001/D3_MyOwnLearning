@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D3 Dashboard</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      .chart-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      svg {
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>D3 Dashboard</h1>
+    <div class="chart-container">
+      <div id="line-chart"></div>
+      <div id="area-chart"></div>
+    </div>
+
+    <script>
+      // Define chart dimensions and margins
+      const width = 500;
+      const height = 400;
+      const marginTop = 20;
+      const marginRight = 30;
+      const marginBottom = 30;
+      const marginLeft = 40;
+
+      // Load the CSV file
+      d3.csv("aapl.csv", d3.autoType).then((aapl) => {
+
+        console.log(aapl);
+        // Scales for both charts
+        const x = d3
+          .scaleUtc()
+          .domain(d3.extent(aapl, (d) => d.date))
+          .range([marginLeft, width - marginRight]);
+
+        const y = d3
+          .scaleLinear()
+          .domain([0, d3.max(aapl, (d) => d.close)])
+          .range([height - marginBottom, marginTop]);
+
+        // Line generator
+        const line = d3
+          .line()
+          .x((d) => x(d.date))
+          .y((d) => y(d.close));
+
+        // Area generator
+        const area = d3
+          .area()
+          .x((d) => x(d.date))
+          .y0(height - marginBottom)
+          .y1((d) => y(d.close));
+
+        // Create the SVG container for the line chart
+        const svgLine = d3
+          .select("#line-chart")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+        // Create the SVG container for the area chart
+        const svgArea = d3
+          .select("#area-chart")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+        // Line chart
+        svgLine
+          .append("path")
+          .datum(aapl)
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 2)
+          .attr("d", line);
+
+        svgLine
+          .append("g")
+          .attr("transform", `translate(0,${height - marginBottom})`)
+          .call(
+            d3
+              .axisBottom(x)
+              .ticks(width / 80)
+              .tickSizeOuter(0)
+          );
+
+        svgLine
+          .append("g")
+          .attr("transform", `translate(${marginLeft},0)`)
+          .call(d3.axisLeft(y).ticks(height / 40));
+
+        // Area chart
+        svgArea
+          .append("path")
+          .datum(aapl)
+          .attr("fill", "steelblue")
+          .attr("opacity", 0.5)
+          .attr("d", area);
+
+        svgArea
+          .append("g")
+          .attr("transform", `translate(0,${height - marginBottom})`)
+          .call(
+            d3
+              .axisBottom(x)
+              .ticks(width / 80)
+              .tickSizeOuter(0)
+          );
+
+        svgArea
+          .append("g")
+          .attr("transform", `translate(${marginLeft},0)`)
+          .call(d3.axisLeft(y).ticks(height / 40));
+      });
+    </script>
+  </body>
+</html>

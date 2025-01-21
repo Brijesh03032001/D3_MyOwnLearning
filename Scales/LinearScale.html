@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D3 Scales Example</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <script>
+      // Define a linear scale
+      const x = d3.scaleLinear([10, 130], [0, 960]); // [10,130] is the domain (INPUT values {x}) , [0,960] is the range (OUTPUT VALUES {y})
+
+      // Test the scale
+      console.log("x(20):", x(20)); // Output: 80
+      console.log("x(50):", x(50)); // Output: 320
+      console.log("x(130):", x(130)); // Output: 960  Basically this is F(x) = y
+
+      // Reverse mapping
+      console.log("x.invert(320):", x.invert(320)); // Output: 50
+      console.log("x.invert(960):", x.invert(960)); // Output: 130    basically this is F(y) = x;
+
+      // Visualize the scale
+      d3.select("body")
+        .append("svg")
+        .attr("width", 960)
+        .attr("height", 50)
+        .selectAll("circle")
+        .data([10, 20, 50, 130]) // Data points from the domain
+        .enter()
+        .append("circle")
+        .attr("cx", (d) => x(d)) // Use the scale to map domain to range
+        .attr("cy", 12) // Fixed y-coordinate
+        .attr("r", 5) // Circle radius
+        .attr("fill", "steelblue");
+
+      //   const x = d3.scaleLinear([-1, 1], [0, 960]);
+      //   const T = x.ticks(5); // [-1, -0.5, 0, 0.5, 1]
+      //   const f = x.tickFormat(5, "+%");
+      //   T.map(f); // ["−100%", "−50%", "+0%", "+50%", "+100%"]
+
+    //   const f = d3.tickFormat(-1, 1, 5, "+%");
+    //   f(-0.5); // "-50%"
+    </script>
+  </body>
+</html>
